@@ -52,4 +52,61 @@ final class QueueTest extends TestCase
 
         $this->assertTrue($this->queue->isEmpty());
     }
+
+    public function testItConsumesEnqueuedMessages(): void
+    {
+        $continue = true;
+        $countedCallbacks = 0;
+
+        $this->queue->enqueue(new Message('to_be_consumed', 'Consume me!'));
+
+        $this->queue->on('to_be_consumed', function (Message $message) use (&$continue, &$countedCallbacks) {
+            $this->assertSame('to_be_consumed', $message->name());
+            $this->assertSame('Consume me!', $message->contents());
+            $continue = false;
+            $countedCallbacks++;
+        });
+
+        $this->queue->on('to_be_consumed', function (Message $message) use (&$continue, &$countedCallbacks) {
+            $countedCallbacks++;
+        });
+
+        $this->queue->consume(function () use (&$continue) {
+            return $continue;
+        }, $errorHandler = null, $delayInMicroSeconds = 1000);
+
+        $this->assertFalse($continue);
+        $this->assertSame(2, $countedCallbacks);
+    }
+
+    public function testItUsesErrorHandlerWhenExceptionIsThrownDuringConsumption(): void
+    {
+        $continue = true;
+
+        $this->queue->enqueue(new Message('will_result_in_error', 'Something bad happened'));
+
+        $this->queue->on('will_result_in_error', function (Message $message) {
+            throw new \Exception($message->contents());
+        });
+
+        $errorHandler = function (Throwable $e) use (&$continue) {
+            $this->assertSame('Something bad happened', $e->getMessage());
+            $continue = false;
+        };
+
+        $this->queue->consume(function () use (&$continue) {
+            return $continue;
+        }, $errorHandler, $delayInMicroSeconds = 1000);
+
+        $this->assertFalse($continue);
+    }
+
+    public function testItClearsAllMessages(): void
+    {
+        $this->queue->enqueue(new Message('to_be_cleared_1', 'To be cleared'));
+        $this->queue->enqueue(new Message('to_be_cleared_2', 'To be cleared'));
+        $this->queue->clear();
+
+        $this->assertTrue($this->queue->isEmpty());
+    }
 }
