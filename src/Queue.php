@@ -20,7 +20,7 @@ final class Queue
     public function dequeue(): Message
     {
         if ($this->isEmpty()) {
-            throw new \Exception('Empty queue');
+            throw new DequeuedEmptyQueue();
         }
 
         $messages = $this->getMuquFilenames();
@@ -81,13 +81,13 @@ final class Queue
 
     private function getMuquFilenames(): array
     {
-        return glob($this->dir . '/*.muqu');
+        return (array) glob($this->dir . '/*.muqu');
     }
 
     private function extractMessageNameFromFilename(string $filename): string
     {
         $basename = basename($filename, '.muqu');
-        $withoutPrefix = strstr($basename, '-');
+        $withoutPrefix = (string) strstr($basename, '-');
 
         return substr($withoutPrefix, 1);
     }
