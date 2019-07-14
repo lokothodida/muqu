@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use lokothodida\Muqu\{Queue, Message};
+use lokothodida\Muqu\{Queue, Message, DequeuedEmptyQueue};
 
 final class QueueTest extends TestCase
 {
@@ -27,6 +27,12 @@ final class QueueTest extends TestCase
     public function testItIsEmptyWhenNoMessagesAreEnqueued(): void
     {
         $this->assertTrue($this->queue->isEmpty());
+    }
+
+    public function testItErrorsWhenDequeueingAnEmptyQueue(): void
+    {
+        $this->expectException(DequeuedEmptyQueue::class);
+        $this->queue->dequeue();
     }
 
     public function testItIsNotEmptyWhenMessagesAreEnqueued(): void

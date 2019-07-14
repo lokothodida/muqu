@@ -20,7 +20,7 @@ final class Queue
     public function dequeue(): Message
     {
         if ($this->isEmpty()) {
-            throw new \Exception('Empty queue');
+            throw new DequeuedEmptyQueue();
         }
 
         $messages = $this->getMuquFilenames();
