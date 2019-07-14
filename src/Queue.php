@@ -23,13 +23,12 @@ final class Queue
             throw new \Exception('Empty queue');
         }
 
-        $messages = glob($this->dir . '*.muqu');
-        $first    = $messages[0];
-        $name     = basename(substr(strstr($first, '-'), 1), '.muqu');
-        $content  = (string) file_get_contents($first);
+        $messages = $this->getMuquFilenames();
+        $filename = $messages[0];
+        $name     = $this->extractMessageNameFromFilename($filename);
+        $content  = (string) file_get_contents($filename);
         $message  = new Message($name, $content);
-
-        unlink($first);
+        unlink($filename);
 
         return $message;
     }
@@ -61,14 +60,12 @@ final class Queue
 
     public function isEmpty(): bool
     {
-        return count(glob($this->dir . '*.muqu')) === 0;
+        return count($this->getMuquFilenames()) === 0;
     }
 
     public function clear(): void
     {
-        $files = glob($this->dir . '*.muqu');
-
-        foreach ($files as $file) {
+        foreach ($this->getMuquFilenames() as $file) {
             unlink($file);
         }
     }
@@ -80,5 +77,18 @@ final class Queue
                 $callback($message);
             }
         }
+    }
+
+    private function getMuquFilenames(): array
+    {
+        return glob($this->dir . '/*.muqu');
+    }
+
+    private function extractMessageNameFromFilename(string $filename): string
+    {
+        $basename = basename($filename, '.muqu');
+        $withoutPrefix = strstr($basename, '-');
+
+        return substr($withoutPrefix, 1);
     }
 }
