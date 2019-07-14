@@ -17,8 +17,8 @@ final class QueueTest extends TestCase
 
     public function tearDown(): void
     {
-        foreach (glob($this->dir . '/*') as $file) {
-            unlink($file);
+        foreach ((array) glob($this->dir . '/*') as $file) {
+            unlink((string) $file);
         }
 
         rmdir($this->dir);
@@ -67,7 +67,7 @@ final class QueueTest extends TestCase
             $countedCallbacks++;
         });
 
-        $this->queue->on('to_be_consumed', function (Message $message) use (&$continue, &$countedCallbacks) {
+        $this->queue->on('to_be_consumed', function (Message $message) use (&$countedCallbacks) {
             $countedCallbacks++;
         });
 
@@ -86,7 +86,7 @@ final class QueueTest extends TestCase
         $this->queue->enqueue(new Message('will_result_in_error', 'Something bad happened'));
 
         $this->queue->on('will_result_in_error', function (Message $message) {
-            throw new \Exception($message->contents());
+            throw new Exception($message->contents());
         });
 
         $errorHandler = function (Throwable $e) use (&$continue) {

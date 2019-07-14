@@ -18,5 +18,8 @@
         "psr-4": {
             "lokothodida\\Muqu\\": "src"
         }
+    },
+    "autoload-dev": {
+        "classmap": ["test"]
     }
 }
