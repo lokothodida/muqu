@@ -1,0 +1,22 @@
+{
+    "name": "lokothodida/muqu",
+    "type": "library",
+    "require": {
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.2",
+        "phpstan/phpstan": "^0.11.12"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lawrence Okoth-Odida",
+            "email": "lawrence.okothodida@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "lokothodida\\Muqu\\": "src"
+        }
+    }
+}
