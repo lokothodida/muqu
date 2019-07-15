@@ -10,7 +10,7 @@ final class Queue
     private $dir;
 
     /**
-     * @var callable[]
+     * @var callable[][]
      */
     private $callbacks = [];
 
