@@ -51,6 +51,17 @@ final class QueueTest extends TestCase
         );
     }
 
+    public function testItDequeuesMessagesInFifoOrder(): void
+    {
+        $this->queue->enqueue(new Message('message_1', ''));
+        $this->queue->enqueue(new Message('message_2', ''));
+        $this->queue->enqueue(new Message('message_3', ''));
+
+        $this->assertSame('message_1', $this->queue->dequeue()->name());
+        $this->assertSame('message_2', $this->queue->dequeue()->name());
+        $this->assertSame('message_3', $this->queue->dequeue()->name());
+    }
+
     public function testItIsEmptyWhenAllEnqueuedMessagesAreDequeued(): void
     {
         $this->queue->enqueue(new Message('to_be_dequeued', 'To be dequeued'));
