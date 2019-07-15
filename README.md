@@ -5,7 +5,7 @@ A simple, flat-file FIFO messaging queue; useful for quickly
 prototyping an application that requires a background worker.
 
 ## Requirements
-* PHP 7.3+
+* PHP 7.2+
 
 ## Basic usage
 ```php

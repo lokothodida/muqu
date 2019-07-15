@@ -42,16 +42,14 @@ final class Queue
         $this->callbacks[$messageName][] = $callback;
     }
 
-    public function consume(?callable $until = null, callable $onError = null, $delayInMicroseconds = 1000000): void
+    public function consume(callable $until = null, callable $onError = null, $delayInMicroseconds = 1000000): void
     {
         while (is_null($until) || $until()) {
             try {
                 $message = $this->dequeue();
                 $this->dispatch($message);
             } catch (\Exception $e) {
-                if ($onError) {
-                    $onError($e);
-                }
+                $onError && $onError($e);
             }
 
             usleep($delayInMicroseconds);
