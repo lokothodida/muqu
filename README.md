@@ -11,7 +11,7 @@ use lokothodida\Muqu;
 
 $queue = new Muqu\Queue('/var/tmp/');
 
-$queue->on('hello', function (Message $message) {
+$queue->on('hello', function (Muqu\Message $message) {
     echo "[*] Received message: " . $message->contents() . "\n";
 });
 $queue->consume();
@@ -43,6 +43,7 @@ $queue->enqueue(new Muqu\Message('hello', 'Hello, World!'));
 ## Retrieving a message (when there is a message in the queue)
 ```php
 $message = $queue->dequeue();
+
 // $message->name() === 'hello', $message->contents() === 'Hello, World!'
 ```
 
@@ -51,12 +52,11 @@ $message = $queue->dequeue();
 $queue->consume();
 ```
 
-
 ## Consuming all messages on the queue (until a condition is met)
 ```php
 $continue = true;
 
-$queue->on('quit', function () use (&continue) {
+$queue->on('quit', function () use (&$continue) {
     $continue = false;
 });
 
