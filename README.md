@@ -12,11 +12,12 @@ prototyping an application that requires a background worker.
 // worker.php
 use lokothodida\Muqu;
 
-$queue = new Muqu\Queue('/var/tmp/');
+$queue = new Muqu\Queue('/var/tmp/'); // point to a readable+writable directory
 
 $queue->on('hello', function (Muqu\Message $message) {
     echo "[*] Received message: " . $message->contents() . "\n";
 });
+
 $queue->consume();
 ```
 
@@ -36,10 +37,8 @@ use lokothodida\Muqu;
 $queue = new Muqu\Queue('/var/tmp/');
 ```
 
-
 ## Sending a message
 ```php
-
 $queue->enqueue(new Muqu\Message('hello', 'Hello, World!'));
 ```
 
@@ -57,9 +56,14 @@ $queue->consume();
 
 ## Consuming all messages on the queue (until a condition is met)
 ```php
+$queue->on('hello', function (Muqu\Message $message) {
+    echo "[*] Received message: " . $message->contents() . "\n";
+});
+
 $continue = true;
 
-$queue->on('quit', function () use (&$continue) {
+$queue->on('quit', function (Muqu\Message $message) use (&$continue) {
+    echo "[*] Closing..." . $message->contents() . "\n";
     $continue = false;
 });
 
@@ -72,6 +76,11 @@ $queue->consume(
     },
     $loopDelayInMicroseconds = 1000000 // defaults to 1 second
 );
+
+// elsewhere...
+$queue->enqueue(new Muqu\Message('hello', 'Hello, World!'));
+$queue->enqueue(new Muqu\Message('hello', 'Going to close the app now!'));
+$queue->enqueue(new Muqu\Message('quit', 'Bye!'));
 ```
 
 ## Clearing the queue

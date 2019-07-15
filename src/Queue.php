@@ -4,7 +4,14 @@ namespace lokothodida\Muqu;
 
 final class Queue
 {
+    /**
+     * @var string
+     */
     private $dir;
+
+    /**
+     * @var callable[]
+     */
     private $callbacks = [];
 
     public function __construct(string $dir)
